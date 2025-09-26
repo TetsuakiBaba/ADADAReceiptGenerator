@@ -254,6 +254,16 @@
         const fields = ["org", "rep", "date", "amount", "currency", "desc", "to", "place", "ref"];
         let stampImageDataUrl = null; // base64 data URL of the stamp
 
+        // Load default seal image
+        async function loadDefaultSeal() {
+            try {
+                const defaultSealUrl = './kakuin.png';
+                stampImageDataUrl = await fetchImageAsDataURL(defaultSealUrl);
+            } catch (e) {
+                console.log('Default seal image (kakuin.png) not found or failed to load:', e);
+            }
+        }
+
         // Load GET params → set fields
         function loadFromParams() {
             const p = new URLSearchParams(location.search);
@@ -445,9 +455,14 @@
         });
 
         // Init
-        loadFromParams();
-        wireInputs();
-        render();
+        async function init() {
+            await loadDefaultSeal();
+            loadFromParams();
+            wireInputs();
+            render();
+        }
+        
+        init();
     </script>
 </body>
 
