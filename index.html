@@ -200,7 +200,7 @@
                     <input id="desc" type="text" placeholder="ADADA+CUMULUS 2025 Conference Registration Fee" />
                 </div>
                 <div>
-                    <label for="to">Bill To (Recipient Name / Affiliation)</label>
+                    <label for="to">Received From ( Name / Affiliation)</label>
                     <input id="to" type="text" placeholder="Dr. Jane Doe, University of Example" />
                 </div>
                 <div class="row">
@@ -335,7 +335,7 @@
             // Bill To
             const to = $("to").value || '';
             doc.setFont('helvetica', 'bold');
-            doc.text('BILL TO', marginX, 48);
+            doc.text('RECEIVED FROM', marginX, 48);
             doc.setFont('helvetica', 'normal');
             doc.text(to || '-', marginX, 54);
 
