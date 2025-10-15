@@ -200,14 +200,24 @@
                     <input id="desc" type="text" placeholder="ADADA+CUMULUS 2025 Conference Registration Fee" />
                 </div>
                 <div>
-                    <label for="to">Received From ( Name / Affiliation)</label>
+                    <label for="to">Received From (Name / Affiliation)</label>
                     <input id="to" type="text" placeholder="Dr. Jane Doe, University of Example" />
                 </div>
+                <div>
+                    <label for="address">Optional Information (Address, etc.)</label>
+                    <textarea id="address" placeholder="399 Samsen Rd., Vachira Phayaban, Dusit, Bangkok 10300"></textarea>
+                </div>
                 <div class="row">
+                    <div>
+                        <label for="taxid">Tax ID (optional)</label>
+                        <input id="taxid" type="text" placeholder="0994000151942" />
+                    </div>
                     <div>
                         <label for="place">Place of Issue (optional)</label>
                         <input id="place" type="text" placeholder="Tokyo, Japan" />
                     </div>
+                </div>
+                <div class="row">
                     <div>
                         <label for="ref">Reference / Notes (optional)</label>
                         <input id="ref" type="text" placeholder="Registration ID: ADADA-2025-00123" />
@@ -251,7 +261,7 @@
     <script>
         const $ = (id) => document.getElementById(id);
 
-        const fields = ["org", "rep", "date", "amount", "currency", "desc", "to", "place", "ref"];
+        const fields = ["org", "rep", "date", "amount", "currency", "desc", "to", "address", "taxid", "place", "ref"];
         let stampImageDataUrl = null; // base64 data URL of the stamp
 
         // Load GET params → set fields
@@ -332,20 +342,40 @@
 
             line(43);
 
-            // Bill To
+            // Received From section
             const to = $("to").value || '';
+            const address = $("address").value || '';
+            const taxid = $("taxid").value || '';
+            
+            let currentY = 48;
             doc.setFont('helvetica', 'bold');
-            doc.text('RECEIVED FROM', marginX, 48);
+            doc.text('RECEIVED FROM', marginX, currentY);
             doc.setFont('helvetica', 'normal');
-            doc.text(to || '-', marginX, 54);
+            currentY += 6;
+            doc.text(to || '-', marginX, currentY);
+            
+            // Add address if provided
+            if (address) {
+                currentY += 5;
+                const addressLines = doc.splitTextToSize(address, 210 - marginX * 2);
+                doc.text(addressLines, marginX, currentY);
+                currentY += addressLines.length * 5;
+            }
+            
+            // Add Tax ID if provided
+            if (taxid) {
+                currentY += 5;
+                doc.text(`Tax ID: ${taxid}`, marginX, currentY);
+                currentY += 5;
+            }
 
             // Description & Amount box
             const desc = $("desc").value || '';
             const amount = $("amount").value ? Number($("amount").value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00';
             const currency = $("currency").value || 'JPY';
 
-            // Amount big box
-            const boxTop = 66;
+            // Amount big box - adjust position based on address/taxid
+            const boxTop = Math.max(66, currentY + 6);
             const boxH = 32;
             const boxW = 210 - marginX * 2;
             doc.setLineWidth(0.4);
